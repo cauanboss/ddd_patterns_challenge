@@ -27,9 +27,10 @@ export default class OrderRepository implements OrderRepositoryInterface {
 
     async find(id: string): Promise<Order> {
         const orderModel = await OrderModel.findOne({
-            where: {}
+            where: {id},
+            include: ["items"],
         })
-        const orderItems = orderModel.items.map((item) => {
+        const orderItems = orderModel?.items?.map((item) => {
             return new OrderItem(item.id, item.name, item.price, item.product_id, item.quantity)
         });
         return new Order(orderModel.id, orderModel.customer_id, orderItems)
@@ -45,10 +46,10 @@ export default class OrderRepository implements OrderRepositoryInterface {
         })
     }
 
-    async update(entity: Order): Promise<void> {
-        await OrderModel.update({
-            customer_id: entity.customerId,
-            items: entity.items.map((item) => ({
+    async update(entity: Order): Promise<any> {
+        return await OrderModel.update({
+            total: entity.total(),
+            items: entity.items.map((item: OrderItem) => ({
                 id: item.id,
                 name: item.name,
                 price: item.price,
@@ -57,8 +58,9 @@ export default class OrderRepository implements OrderRepositoryInterface {
             }))
         }, {
             where: {
-                id: entity.id
+                id: entity.id,
+                customer_id: entity.customerId,
             }
-        })
+        });
     }
 }

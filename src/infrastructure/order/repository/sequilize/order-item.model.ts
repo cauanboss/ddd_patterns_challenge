@@ -21,6 +21,7 @@ export default class OrderItemModel extends Model {
 
   @ForeignKey(() => ProductModel)
   @Column({ allowNull: false })
+  // tslint:disable-next-line:variable-name
   declare product_id: string;
 
   @BelongsTo(() => ProductModel)
