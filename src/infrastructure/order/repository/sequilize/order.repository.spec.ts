@@ -114,7 +114,7 @@ describe("Order repository test", () => {
             quantity: orderItem1.quantity
         }, {where: {id: orderItem1.id, product_id: product1.id}})
 
-        const orderItemModel = await OrderItemModel.findOne({where:{id: "123"}})
+        const orderItemModel = await OrderItemModel.findOne({where: {id: "123"}})
 
 
         const orderItem2 = new OrderItem(
@@ -150,5 +150,59 @@ describe("Order repository test", () => {
                 },
             ],
         });
+    });
+
+    it("should find a order", async () => {
+        const customerRepository = new CustomerRepository();
+        const customer = new Customer("123 ", "Customer 1");
+        const address = new Address("Street 1", 1, "Zipcode 1", "City 1");
+        customer.changeAddress(address);
+        await customerRepository.create(customer);
+
+        const productRepository = new ProductRepository();
+        const product = new Product("123", "Product 1", 10);
+        await productRepository.create(product);
+
+        const orderItem = new OrderItem(
+            "1",
+            product.name,
+            product.price,
+            product.id,
+            2
+        );
+
+        const order = new Order(customer.id, customer.id, [orderItem]);
+        const orderRepository = new OrderRepository();
+        await orderRepository.create(order);
+
+        const foundOrder = await orderRepository.find(order.id);
+        expect(foundOrder.id).toEqual(order.id);
+    });
+
+    it("should find all orders", async () => {
+        const customerRepository = new CustomerRepository();
+        const customer = new Customer("123 ", "Customer 1");
+        const address = new Address("Street 1", 1, "Zipcode 1", "City 1");
+        customer.changeAddress(address);
+        await customerRepository.create(customer);
+
+        const productRepository = new ProductRepository();
+        const product = new Product("123", "Product 1", 10);
+        await productRepository.create(product);
+
+        const orderItem = new OrderItem(
+            "1",
+            product.name,
+            product.price,
+            product.id,
+            2
+        );
+
+        const order = new Order(customer.id, customer.id, [orderItem]);
+        const orderRepository = new OrderRepository();
+        await orderRepository.create(order);
+
+        const foundOrders = await orderRepository.findAll();
+        expect(foundOrders.length).toEqual(1);
     });
 });
